@@ -1,103 +1,148 @@
-import Image from "next/image";
+'use client';
+
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { Briefcase, Search, Shield } from 'lucide-react';
+import heroImage from '@/public/img/hero-image.png'
+import { useAuth } from '@/lib/context/AuthContext';
 
 export default function Home() {
+  const {isLoggedIn, role } = useAuth();
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="flex flex-col">
+      {/* Hero Section */}
+      <section className="bg-gradient-to-r from-primary/10 to-white py-16 md:py-24">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
+            <div className="flex-1 text-center lg:text-left">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 tracking-tight">
+                Find Your Dream Job, Simply
+              </h1>
+              <p className="mt-4 text-lg sm:text-xl text-gray-600 max-w-md mx-auto lg:mx-0">
+                JobGhar is a minimal job portal connecting job seekers and employers with an ethical, user-focused platform.
+              </p>
+              <div className="mt-8 flex flex-col sm:flex-row justify-center lg:justify-start gap-4">
+                {isLoggedIn ? (
+                  role === 'seeker' ? (
+                    <Button asChild size="lg" className="text-base font-medium">
+                      <Link href="/jobs">
+                        <Search className="mr-2 h-5 w-5" />
+                        Browse Jobs
+                      </Link>
+                    </Button>
+                  ) : (
+                    <Button asChild size="lg" className="text-base font-medium">
+                      <Link href="/employer/dashboard">
+                        <Briefcase className="mr-2 h-5 w-5" />
+                        Post a Job
+                      </Link>
+                    </Button>
+                  )
+                ) : (
+                  <>
+                    <Button asChild size="lg" className="text-base font-medium">
+                      <Link href="/jobs">
+                        <Search className="mr-2 h-5 w-5" />
+                        Browse Jobs
+                      </Link>
+                    </Button>
+                    <Button asChild variant="outline" size="lg" className="text-base font-medium">
+                      <Link href="/register">Get Started</Link>
+                    </Button>
+                  </>
+                )}
+              </div>
+            </div>
+            <div className="flex-1 hidden lg:block">
+              <div className="relative w-full h-96 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-xl shadow-lg transform hover:scale-105 transition-transform duration-500 ease-in-out" aria-hidden="true">
+                <img
+                  src={heroImage.src}
+                  alt="Hero"
+                  className="absolute inset-0 w-full h-full object-cover rounded-xl"
+                />
+                <div className="absolute inset-0 bg-grid-pattern opacity-10"></div>
+              </div>
+            </div>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-16 bg-white">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 text-center mb-12">
+            Why Choose JobGhar?
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="flex flex-col items-center p-6 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+              <Search className="h-8 w-8 text-primary mb-4" />
+              <h3 className="text-lg font-semibold text-gray-900">Browse Jobs Easily</h3>
+              <p className="mt-2 text-sm text-gray-600 text-center">
+                Explore a curated list of jobs tailored for you, with simple filters and no clutter.
+              </p>
+            </div>
+            <div className="flex flex-col items-center p-6 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+              <Briefcase className="h-8 w-8 text-primary mb-4" />
+              <h3 className="text-lg font-semibold text-gray-900">Post Jobs Fast</h3>
+              <p className="mt-2 text-sm text-gray-600 text-center">
+                Employers can create job listings in minutes with our streamlined process.
+              </p>
+            </div>
+            <div className="flex flex-col items-center p-6 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+              <Shield className="h-8 w-8 text-primary mb-4" />
+              <h3 className="text-lg font-semibold text-gray-900">Secure & Ethical</h3>
+              <p className="mt-2 text-sm text-gray-600 text-center">
+                Your data is protected with our commitment to privacy and ethical practices.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="py-16 bg-gray-100">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 text-center mb-12">
+            What Our Users Say
+          </h2>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="bg-white p-6 rounded-lg shadow-sm">
+              <p className="text-sm text-gray-600 italic text-center">
+                “JobGhar made finding my next role so easy. The platform is clean and focused, with no distractions.”
+              </p>
+              <p className="mt-4 text-sm font-medium text-gray-900 text-center">— Priya Sharma, Job Seeker</p>
+            </div>
+            <div className="bg-white p-6 rounded-lg shadow-sm">
+              <p className="text-sm text-gray-600 italic text-center">
+                “Posting jobs on JobGhar was quick and hassle-free. We found great candidates in no time.”
+              </p>
+              <p className="mt-4 text-sm font-medium text-gray-900 text-center">— Anil Gupta, Employer</p>
+            </div>
+            <div className="bg-white p-6 rounded-lg shadow-sm">
+              <p className="text-sm text-gray-600 italic text-center">
+                “The intuitive design of JobGhar helped me land my ideal job in just a few clicks.”
+              </p>
+              <p className="mt-4 text-sm font-medium text-gray-900 text-center">— Sunita Rai, Job Seeker</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Call-to-Action Section */}
+      <section className="py-16 bg-primary/90 text-white">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl sm:text-4xl font-bold mb-6">
+            Ready to Get Started?
+          </h2>
+          <p className="text-lg text-white/80 max-w-md mx-auto mb-8">
+            Join JobGhar today and take the next step in your career or hiring journey.
+          </p>
+          <Button asChild size="lg" variant="secondary" className="text-base font-medium">
+            <Link href={isLoggedIn ? '/jobs' : '/register'}>Join Now</Link>
+          </Button>
+        </div>
+      </section>
     </div>
   );
 }
