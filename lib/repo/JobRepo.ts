@@ -1,5 +1,6 @@
 import apiClient from "../api/apiClient";
 import axios from "axios";
+import { handleApiError } from "@/utils/ErrorHandler";
 
 class JobRepo {
     constructor() { }
@@ -23,13 +24,8 @@ class JobRepo {
             } else {
                 onError(message || 'Failed to fetch job list');
             }
-        } catch (error: unknown) {
-            let errorMsg = 'Something went wrong while fetching job list';
-            if (axios.isAxiosError(error) && error.response) {
-                errorMsg = error.response.data?.message || errorMsg;
-            } else if (error instanceof Error) {
-                errorMsg = error.message;
-            }
+        } catch (error: string | any) {
+            let errorMsg = handleApiError(error);
             onError(errorMsg);
         }
     }
@@ -50,14 +46,8 @@ class JobRepo {
             } else {
                 onError(message || "Failed to fetch job details");
             }
-        } catch (error: unknown) {
-            let errorMsg = "Something went wrong while fetching job details";
-
-            if (axios.isAxiosError(error) && error.response) {
-                errorMsg = error.response.data?.message || errorMsg;
-            } else if (error instanceof Error) {
-                errorMsg = error.message;
-            }
+        } catch (error: string | any) {
+            let errorMsg = handleApiError(error);
             onError(errorMsg);
         }
     }
@@ -83,14 +73,8 @@ class JobRepo {
             } else {
                 onError(message || "Failed to create job");
             }
-        } catch (error: unknown) {
-            let errorMsg = "Something went wrong while creating job";
-
-            if (axios.isAxiosError(error) && error.response) {
-                errorMsg = error.response.data?.message || errorMsg;
-            } else if (error instanceof Error) {
-                errorMsg = error.message;
-            }
+        } catch (error: string | any) {
+            let errorMsg = handleApiError(error);
             onError(errorMsg);
         }
     }
@@ -109,14 +93,8 @@ class JobRepo {
             } else {
                 onError(message || "Failed to fetch employer jobs");
             }
-        } catch (error: unknown) {
-            let errorMsg = "Something went wrong while fetching employer jobs";
-
-            if (axios.isAxiosError(error) && error.response) {
-                errorMsg = error.response.data?.message || errorMsg;
-            } else if (error instanceof Error) {
-                errorMsg = error.message;
-            }
+        } catch (error: string | any) {
+            let errorMsg = handleApiError(error);
             onError(errorMsg);
         }
     }
@@ -139,14 +117,8 @@ class JobRepo {
             } else {
                 onError(message || "Failed to update job");
             }
-        } catch (error: unknown) {
-            let errorMsg = "Something went wrong while updating job";
-
-            if (axios.isAxiosError(error) && error.response) {
-                errorMsg = error.response.data?.message || errorMsg;
-            } else if (error instanceof Error) {
-                errorMsg = error.message;
-            }
+        } catch (error: string | any) {
+            let errorMsg = handleApiError(error);
             onError(errorMsg);
         }
     }
@@ -167,14 +139,8 @@ class JobRepo {
             } else {
                 onError(message || "Failed to delete job");
             }
-        } catch (error: unknown) {
-            let errorMsg = "Something went wrong while deleting job";
-
-            if (axios.isAxiosError(error) && error.response) {
-                errorMsg = error.response.data?.message || errorMsg;
-            } else if (error instanceof Error) {
-                errorMsg = error.message;
-            }
+        } catch (error: string | any) {
+            let errorMsg = handleApiError(error);
             onError(errorMsg);
         }
     }
