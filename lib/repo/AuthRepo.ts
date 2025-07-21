@@ -1,5 +1,6 @@
 import axios from "axios";
 import apiClient from "../api/apiClient";
+import { handleApiError } from "@/utils/ErrorHandler";
 
 class AuthRepo {
     constructor() { }
@@ -17,15 +18,8 @@ class AuthRepo {
             else {
                 onError(message || "Failed to fetch user profile");
             }
-        }
-        catch (error: unknown) {
-            let errorMsg = "Something went wrong while fetching user profile";
-
-            if (axios.isAxiosError(error) && error.response) {
-                errorMsg = error.response.data?.message || errorMsg;
-            } else if (error instanceof Error) {
-                errorMsg = error.message;
-            }
+        } catch (error: string | any) {
+            let errorMsg = handleApiError(error);
             onError(errorMsg);
         }
     }
@@ -48,14 +42,8 @@ class AuthRepo {
             } else {
                 onError(message || "Login failed");
             }
-        } catch (error: unknown) {
-            let errorMsg = "Something went wrong during login";
-
-            if (axios.isAxiosError(error) && error.response) {
-                errorMsg = error.response.data?.message || errorMsg;
-            } else if (error instanceof Error) {
-                errorMsg = error.message;
-            }
+        } catch (error: string | any) {
+            let errorMsg = handleApiError(error);
             onError(errorMsg);
         }
     }
@@ -93,14 +81,8 @@ class AuthRepo {
             } else {
                 onError(message || "Registration failed");
             }
-        } catch (error: unknown) {
-            let errorMsg = "Something went wrong during registration";
-
-            if (axios.isAxiosError(error) && error.response) {
-                errorMsg = error.response.data?.message || errorMsg;
-            } else if (error instanceof Error) {
-                errorMsg = error.message;
-            }
+        } catch (error: string | any) {
+            let errorMsg = handleApiError(error);
             onError(errorMsg);
         }
     }
@@ -119,14 +101,8 @@ class AuthRepo {
             } else {
                 onError(message || "Logout failed");
             }
-        } catch (error: unknown) {
-            let errorMsg = "Something went wrong during logout";
-
-            if (axios.isAxiosError(error) && error.response) {
-                errorMsg = error.response.data?.message || errorMsg;
-            } else if (error instanceof Error) {
-                errorMsg = error.message;
-            }
+        } catch (error: string | any) {
+            let errorMsg = handleApiError(error);
             onError(errorMsg);
         }
     }
@@ -164,14 +140,8 @@ class AuthRepo {
             } else {
                 onError(message || "Failed to change password");
             }
-        } catch (error: unknown) {
-            let errorMsg = "Something went wrong while changing password";
-
-            if (axios.isAxiosError(error) && error.response) {
-                errorMsg = error.response.data?.message || errorMsg;
-            } else if (error instanceof Error) {
-                errorMsg = error.message;
-            }
+        } catch (error: string | any) {
+            let errorMsg = handleApiError(error);
             onError(errorMsg);
         }
     }

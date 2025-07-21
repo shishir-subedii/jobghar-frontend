@@ -1,5 +1,6 @@
 import axios from "axios";
 import apiClient from "../api/apiClient";
+import { handleApiError } from "@/utils/ErrorHandler";
 
 class UserRepo{
     constructor() { }
@@ -17,14 +18,8 @@ class UserRepo{
             } else {
                 onError(message || "Failed to fetch user profile");
             }
-        } catch (error: unknown) {
-            let errorMsg = "Something went wrong while fetching user profile";
-
-            if (axios.isAxiosError(error) && error.response) {
-                errorMsg = error.response.data?.message || errorMsg;
-            } else if (error instanceof Error) {
-                errorMsg = error.message;
-            }
+        } catch (error: string | any) {
+            let errorMsg = handleApiError(error);
             onError(errorMsg);
         }
     }
