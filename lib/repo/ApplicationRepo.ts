@@ -1,5 +1,6 @@
 import axios from "axios";
 import apiClient from "../api/apiClient";
+import { handleApiError } from "@/utils/ErrorHandler";
 
 class ApplicationRepo {
     constructor() { }
@@ -31,14 +32,8 @@ class ApplicationRepo {
             } else {
                 onError(message || "Failed to submit application");
             }
-        } catch (error: unknown) {
-            let errorMsg = "Something went wrong while submitting application";
-
-            if (axios.isAxiosError(error) && error.response) {
-                errorMsg = error.response.data?.message || errorMsg;
-            } else if (error instanceof Error) {
-                errorMsg = error.message;
-            }
+        } catch (error: string | any) {
+            let errorMsg = handleApiError(error);
             onError(errorMsg);
         }
     }
@@ -56,14 +51,8 @@ class ApplicationRepo {
             } else {
                 onError(message || "Failed to fetch applications");
             }
-        } catch (error: unknown) {
-            let errorMsg = "Something went wrong while fetching applications";
-
-            if (axios.isAxiosError(error) && error.response) {
-                errorMsg = error.response.data?.message || errorMsg;
-            } else if (error instanceof Error) {
-                errorMsg = error.message;
-            }
+        } catch (error: string | any) {
+            let errorMsg = handleApiError(error);
             onError(errorMsg);
         }
     }
@@ -82,14 +71,8 @@ class ApplicationRepo {
             } else {
                 onError(message || "Failed to fetch application");
             }
-        } catch (error: unknown) {
-            let errorMsg = "Something went wrong while fetching application";
-
-            if (axios.isAxiosError(error) && error.response) {
-                errorMsg = error.response.data?.message || errorMsg;
-            } else if (error instanceof Error) {
-                errorMsg = error.message;
-            }
+        } catch (error: string | any) {
+            let errorMsg = handleApiError(error);
             onError(errorMsg);
         }
     }
@@ -112,14 +95,8 @@ class ApplicationRepo {
             } else {
                 onError(message || "Failed to fetch applications for the job");
             }
-        } catch (error: unknown) {
-            let errorMsg = "Something went wrong while fetching applications for the job";
-
-            if (axios.isAxiosError(error) && error.response) {
-                errorMsg = error.response.data?.message || errorMsg;
-            } else if (error instanceof Error) {
-                errorMsg = error.message;
-            }
+        } catch (error: string | any) {
+            let errorMsg = handleApiError(error);
             onError(errorMsg);
         }
     }
@@ -139,14 +116,8 @@ class ApplicationRepo {
             } else {
                 onError(message || "Failed to fetch reviewed applications for the job");
             }
-        } catch (error: unknown) {
-            let errorMsg = "Something went wrong while fetching reviewed applications for the job";
-
-            if (axios.isAxiosError(error) && error.response) {
-                errorMsg = error.response.data?.message || errorMsg;
-            } else if (error instanceof Error) {
-                errorMsg = error.message;
-            }
+        } catch (error: string | any) {
+            let errorMsg = handleApiError(error);
             onError(errorMsg);
         }
     }
@@ -166,14 +137,8 @@ class ApplicationRepo {
             } else {
                 onError(message || "Failed to fetch application details");
             }
-        } catch (error: unknown) {
-            let errorMsg = "Something went wrong while fetching application details";
-
-            if (axios.isAxiosError(error) && error.response) {
-                errorMsg = error.response.data?.message || errorMsg;
-            } else if (error instanceof Error) {
-                errorMsg = error.message;
-            }
+        } catch (error: string | any) {
+            let errorMsg = handleApiError(error);
             onError(errorMsg);
         }
     }
@@ -193,14 +158,8 @@ class ApplicationRepo {
             } else {
                 onError(message || "Failed to mark application as reviewed");
             }
-        } catch (error: unknown) {
-            let errorMsg = "Something went wrong while marking application as reviewed";
-
-            if (axios.isAxiosError(error) && error.response) {
-                errorMsg = error.response.data?.message || errorMsg;
-            } else if (error instanceof Error) {
-                errorMsg = error.message;
-            }
+        } catch (error: string | any) {
+            let errorMsg = handleApiError(error);
             onError(errorMsg);
         }
     }
