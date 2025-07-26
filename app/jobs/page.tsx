@@ -9,13 +9,13 @@ import {
     Dialog,
     DialogContent,
     DialogTrigger,
-    DialogClose,
+    DialogTitle,
 } from '@/components/ui/dialog';
 import Link from 'next/link';
-import { DialogTitle } from '@radix-ui/react-dialog';
 import { jobRepo } from '@/lib/repo/JobRepo';
 import { toast } from 'sonner';
 import Loading from '@/components/custom/Loading';
+import { DialogClose } from '@radix-ui/react-dialog';
 
 interface Job {
     id: number;
@@ -24,8 +24,8 @@ interface Job {
     company: string;
     location: string;
     salary: number;
-    jobType: 'full-time' | 'part-time' | 'remote' | 'internship';
-    category: 'tech' | 'health' | 'education' | 'sales' | 'finance';
+    jobType: string;
+    category: string;
     applicationsCount: number;
     createdAt: string;
     deadline: string;
@@ -40,8 +40,8 @@ interface Filters {
 }
 
 export default function Jobs() {
-    const [jobs, setJobs] = useState<Job[]>([]);
-    const [searchQuery, setSearchQuery] = useState<string>('');
+    const [allJobs, setAllJobs] = useState<Job[]>([]);
+    const [searchQuery, setSearchQuery] = useState('');
     const [filters, setFilters] = useState<Filters>({
         jobType: [],
         category: [],
@@ -49,35 +49,21 @@ export default function Jobs() {
         salaryMin: 0,
         salaryMax: 2000000,
     });
-    const [currentPage, setCurrentPage] = useState<number>(1);
-    const [totalPages, setTotalPages] = useState<number>(1);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [loading, setLoading] = useState(false);
     const jobsPerPage = 10;
-    const [loading, setLoading] = useState<boolean>(false);
-
-    const fetchJobs = async (page = 1) => {
-        setLoading(true);
-        try {
-            await jobRepo.getJobList({
-                page,
-                limit: jobsPerPage,
-                onSuccess: (data) => {
-                    setJobs(data.data);
-                    setTotalPages(data.totalPages || 1);
-                },
-                onError: (message) => {
-                    toast.error(message || "Failed to fetch job list");
-                }
-            });
-        } catch (error) {
-            toast.error("Failed to fetch jobs. Please try again later.");
-        } finally {
-            setLoading(false);
-        }
-    }
 
     useEffect(() => {
-        fetchJobs(currentPage);
-    }, [currentPage]);
+        setLoading(true);
+        jobRepo.getJobList({
+            onSuccess: (data) => {
+                setAllJobs(data || []);
+            },
+            onError: (message) => {
+                toast.error(message || 'Failed to fetch job list');
+            },
+        }).finally(() => setLoading(false));
+    }, []);
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(e.target.value);
@@ -91,30 +77,45 @@ export default function Jobs() {
             if (name === 'salaryMin' || name === 'salaryMax') {
                 updated[name] = Number(value);
             } else {
+                const list = updated[name as keyof Omit<Filters, 'salaryMin' | 'salaryMax'>];
                 updated[name as keyof Omit<Filters, 'salaryMin' | 'salaryMax'>] = checked
-                    ? [...updated[name as keyof Omit<Filters, 'salaryMin' | 'salaryMax'>], value]
-                    : updated[name as keyof Omit<Filters, 'salaryMin' | 'salaryMax'>].filter((v) => v !== value);
+                    ? [...list, value]
+                    : list.filter((item) => item !== value);
             }
             return updated;
         });
         setCurrentPage(1);
     };
 
-    const filteredJobs = jobs.filter((job) => {
-        const matchesSearch = job.title.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesJobType = filters.jobType.length === 0 || filters.jobType.includes(job.jobType);
-        const matchesCategory = filters.category.length === 0 || filters.category.includes(job.category);
-        const matchesApplications = filters.applicationsCount.length === 0 ||
-            filters.applicationsCount.some((range) => {
+    const filteredJobs = allJobs
+        .filter((job) =>
+            job.title.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+        .filter((job) =>
+            filters.jobType.length === 0 || filters.jobType.includes(job.jobType)
+        )
+        .filter((job) =>
+            filters.category.length === 0 || filters.category.includes(job.category)
+        )
+        .filter((job) => {
+            if (filters.applicationsCount.length === 0) return true;
+            return filters.applicationsCount.some((range) => {
                 if (range === '<5') return job.applicationsCount < 5;
                 if (range === '5-20') return job.applicationsCount >= 5 && job.applicationsCount <= 20;
                 if (range === '20-50') return job.applicationsCount > 20 && job.applicationsCount <= 50;
                 if (range === '50+') return job.applicationsCount > 50;
                 return true;
             });
-        const matchesSalary = job.salary >= filters.salaryMin && job.salary <= filters.salaryMax;
-        return matchesSearch && matchesJobType && matchesCategory && matchesApplications && matchesSalary;
-    });
+        })
+        .filter((job) =>
+            job.salary >= filters.salaryMin && job.salary <= filters.salaryMax
+        );
+
+    const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
+    const paginatedJobs = filteredJobs.slice(
+        (currentPage - 1) * jobsPerPage,
+        currentPage * jobsPerPage
+    );
 
     return (
         <section className="bg-gray-50 flex flex-col min-h-screen">
@@ -134,9 +135,10 @@ export default function Jobs() {
                         />
                     </div>
 
+                    {/* Mobile Filter */}
                     <div className="flex items-center justify-center sm:hidden mb-6">
                         <Dialog>
-                            <div className='flex items-center justify-around w-full'>
+                            <div className="flex items-center justify-around w-full">
                                 <DialogTitle className="text-lg font-semibold text-gray-900">
                                     Filter Jobs
                                 </DialogTitle>
@@ -158,6 +160,7 @@ export default function Jobs() {
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+                        {/* Sidebar Filter */}
                         <div className="hidden sm:block col-span-1 bg-white p-6 rounded-lg shadow-sm min-h-[650px] max-h-[850px] overflow-y-auto">
                             <h2 className="text-lg font-semibold text-gray-900 mb-4">Filters</h2>
                             <div className="space-y-6">
@@ -168,18 +171,19 @@ export default function Jobs() {
                             </div>
                         </div>
 
+                        {/* Job List */}
                         <div className="col-span-1 sm:col-span-2 lg:col-span-3">
                             <div className="grid grid-cols-1 gap-6">
-                                {filteredJobs.length === 0 ? (
+                                {paginatedJobs.length === 0 ? (
                                     <p className="text-center text-gray-600">No jobs found.</p>
                                 ) : (
-                                    filteredJobs.map((job) => (
+                                    paginatedJobs.map((job) => (
                                         <div key={job.id} className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
                                             <h3 className="text-lg sm:text-xl font-semibold text-gray-900">{job.title}</h3>
                                             <p className="mt-1 text-gray-600">{job.company} • {job.location}</p>
                                             <p className="mt-1 text-gray-600">₹{job.salary.toLocaleString()} • {job.jobType} • {job.category}</p>
                                             <p className="mt-1 text-gray-600">Applications: {job.applicationsCount}</p>
-                                            <p className="mt-1 text-gray-500">Posted on {job.createdAt}</p>
+                                            <p className="mt-1 text-gray-500">Posted on {new Date(job.createdAt).toLocaleDateString()}</p>
                                             <Button asChild variant="link" className="mt-4 p-0 text-primary hover:text-primary-dark">
                                                 <Link href={`/job/${job.slug}`}>View Details</Link>
                                             </Button>
@@ -217,9 +221,6 @@ export default function Jobs() {
     );
 }
 
-// FilterSection & SalaryFilter (same as your existing components)
-
-
 interface FilterSectionProps {
     title: string;
     name: string;
@@ -243,7 +244,6 @@ function FilterSection({ title, name, options, onChange, selected }: FilterSecti
                             checked={selected.includes(option)}
                             onChange={onChange}
                             className="h-4 w-4 text-primary focus:ring-primary"
-                            aria-label={`Filter by ${option} ${name}`}
                         />
                         <Label htmlFor={`${name}-${option}`} className="ml-2 text-sm sm:text-base text-gray-900">
                             {option}
@@ -278,8 +278,6 @@ function SalaryFilter({ min, max, onChange }: SalaryFilterProps) {
                             min={0}
                             max={2000000}
                             step={10000}
-                            className="mt-1 text-sm sm:text-base"
-                            aria-label="Minimum salary"
                         />
                     </div>
                     <div>
@@ -293,8 +291,6 @@ function SalaryFilter({ min, max, onChange }: SalaryFilterProps) {
                             min={0}
                             max={2000000}
                             step={10000}
-                            className="mt-1 text-sm sm:text-base"
-                            aria-label="Maximum salary"
                         />
                     </div>
                 </div>
@@ -310,7 +306,6 @@ function SalaryFilter({ min, max, onChange }: SalaryFilterProps) {
                         max={2000000}
                         step={10000}
                         className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                        aria-label="Adjust maximum salary"
                     />
                     <div className="flex justify-between mt-1 text-sm sm:text-base text-gray-600">
                         <span>₹0</span>
