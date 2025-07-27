@@ -50,18 +50,25 @@ export default function ApplicationDetail() {
 
     const handleMarkAsReviewed = () => {
         if (!application) return;
-
-        setMarking(true);
-        applicationRepo.markApplicationAsReviewed({
-            id: application.id,
-            onSuccess: (data) => {
-                setApplication({ ...application, status: 'reviewed' });
-                toast.success('Application marked as reviewed');
-            },
-            onError: (message) => {
-                toast.error(message || 'Failed to mark as reviewed');
-            },
-        }).finally(() => setMarking(false));
+        setLoading(true);
+        try {
+            setMarking(true);
+            applicationRepo.markApplicationAsReviewed({
+                id: application.id,
+                onSuccess: (data) => {
+                    setApplication({ ...application, status: 'reviewed' });
+                    toast.success('Application marked as reviewed');
+                },
+                onError: (message) => {
+                    toast.error(message || 'Failed to mark as reviewed');
+                },
+            }).finally(() => setMarking(false));
+        } catch (error) {
+            setMarking(false);
+            toast.error('An unexpected error occurred while marking the application as reviewed');
+        }finally{
+            setLoading(false);
+        }
     };
 
     if (loading) {

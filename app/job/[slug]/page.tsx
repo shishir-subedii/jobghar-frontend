@@ -55,7 +55,7 @@ export default function JobDetail() {
     const slug = params.slug as string;
     const [job, setJob] = useState<Job | null>(null);
     const [loading, setLoading] = useState(true);
-    const {isLoggedIn, role} = useAuth();
+    const { isLoggedIn, role } = useAuth();
 
     const [applicationForm, setApplicationForm] = useState<ApplicationFormData>({
         jobSlug: '',
@@ -93,47 +93,56 @@ export default function JobDetail() {
         fetchJobDetails();
     }, [slug]);
 
-    if (loading) return <Loading/>;
+    if (loading) return <Loading />;
     if (!job) return notFound();
 
     const handleApplicationSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if(!isLoggedIn || role !== 'seeker') {
-            toast.error('You must be logged in as seeker to apply for jobs');
-            return;
-        }
-        if (!applicationForm.coverLetter) {
-            toast.error('Cover letter is required');
-            return;
-        }
-        if (!applicationForm.cv) {
-            toast.error('CV is required');
-            return;
-        }
-        if (applicationForm.cv.size > 2 * 1024 * 1024) {
-            toast.error('CV must be less than 2MB');
-            return;
-        }
-        if (applicationForm.cv.type !== 'application/pdf') {
-            toast.error('CV must be a PDF file');
-            return;
-        }
-        await applicationRepo.submitApplication({
-            jobSlug: applicationForm.jobSlug,
-            coverLetter: applicationForm.coverLetter,
-            cv: applicationForm.cv,
-            onSuccess: (data) => {
-                toast.success('Application submitted successfully');
-                setApplicationForm({
-                    jobSlug: '',
-                    coverLetter: '',
-                    cv: null,
-                });
-            },
-            onError: (message) => {
-                toast.error(message);
+        setLoading(true);
+        try {
+            if (!isLoggedIn || role !== 'seeker') {
+                toast.error('You must be logged in as seeker to apply for jobs');
+                return;
             }
-        })
+            if (!applicationForm.coverLetter) {
+                toast.error('Cover letter is required');
+                return;
+            }
+            if (!applicationForm.cv) {
+                toast.error('CV is required');
+                return;
+            }
+            if (applicationForm.cv.size > 2 * 1024 * 1024) {
+                toast.error('CV must be less than 2MB');
+                return;
+            }
+            if (applicationForm.cv.type !== 'application/pdf') {
+                toast.error('CV must be a PDF file');
+                return;
+            }
+            await applicationRepo.submitApplication({
+                jobSlug: applicationForm.jobSlug,
+                coverLetter: applicationForm.coverLetter,
+                cv: applicationForm.cv,
+                onSuccess: (data) => {
+                    toast.success('Application submitted successfully');
+                    setApplicationForm({
+                        jobSlug: '',
+                        coverLetter: '',
+                        cv: null,
+                    });
+                },
+                onError: (message) => {
+                    toast.error(message);
+                }
+            })
+        } catch (error) {
+            console.error('Error submitting application:', error);
+            toast.error('Failed to submit application');
+        }
+        finally {
+            setLoading(false);
+        }
     };
 
     const handleInputChange = (
@@ -264,13 +273,20 @@ export default function JobDetail() {
                                             aria-label="Upload CV (PDF, max 2MB)"
                                         />
                                     </div>
-                                    <Button
+                                    {loading ? <Button
+                                        type="submit"
+                                        className="w-full text-base sm:text-lg cursor-pointer"
+                                        aria-label="Submit job application"
+                                        disabled
+                                    >
+                                        Submit Application
+                                    </Button> : <Button
                                         type="submit"
                                         className="w-full text-base sm:text-lg cursor-pointer"
                                         aria-label="Submit job application"
                                     >
                                         Submit Application
-                                    </Button>
+                                    </Button>}
                                 </form>
                             </DialogContent>
                         </Dialog>
