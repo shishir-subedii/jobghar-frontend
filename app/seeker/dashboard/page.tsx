@@ -92,7 +92,7 @@ export default function SeekerDashboard() {
                                             <TableRow key={app.id}>
                                                 <TableCell className="text-sm sm:text-base">{index+1}</TableCell>
                                                 <TableCell className="text-sm sm:text-base">{app.jobTitle}</TableCell>
-                                                <TableCell className="text-sm sm:text-base">Google</TableCell>
+                                                <TableCell className="text-sm sm:text-base">N/A</TableCell>
                                                 <TableCell className="text-sm sm:text-base">
                                                     {new Date(app.appliedAt).toLocaleDateString('en-US', {
                                                         month: '2-digit',
